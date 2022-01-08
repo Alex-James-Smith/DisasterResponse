@@ -20,6 +20,15 @@ from nltk.stem import WordNetLemmatizer
 import pickle
 
 def load_data(database_filepath):
+    '''
+    Loads data from SQL database
+    INPUT 
+        database_filepath - location of disaster response database
+    OUTPUT
+        X - dataframe with disaster response messages (predictor variable)
+        Y - dataframe with disaster response categories (response variables)
+        columns - disaster response categories
+    '''    
     engine = create_engine('sqlite:///' + database_filepath)
     df = pd.read_sql_table('clean_disaster', engine)  
     X = df['message']
@@ -29,7 +38,14 @@ def load_data(database_filepath):
 
 
 def tokenize(text):
-    text = re.compile('[^A-Za-z0-9]').sub('', text)
+    '''
+    Extract only letters, numbers and spaces, tokenize, then lower, strip and lemmatise tokens. 
+    INPUT 
+        text - disaster response message to be processed
+    OUTPUT
+        clean_tokens - tokenised and standardised disaster response messages
+    '''  
+    text = re.compile('[^A-Za-z0-9\s]').sub('', text)
     
     tokens = word_tokenize(text)
     lemmatizer = WordNetLemmatizer()
@@ -43,6 +59,13 @@ def tokenize(text):
 
 
 def build_model():
+    '''
+    Extract only letters, numbers and spaces, tokenize, then lower, strip and lemmatise tokens. 
+    INPUT 
+        None
+    OUTPUT
+        cv - Machine Learning Pipeline that tokenises messages, vectorises, performs TFIDF and uses Random Forest Classification with parameters to GridSearch for optimum model
+    '''  
     pipeline = Pipeline([
     ('text_pipeline', Pipeline([
             ('vect', CountVectorizer(tokenizer=tokenize)),
@@ -62,6 +85,16 @@ def build_model():
 
 
 def evaluate_model(model, X_test, Y_test, category_names):
+    '''
+    Evaluate trained model, comparing predictions with test data for each category on precision, recall and f1-score
+    INPUT 
+        model - fitted model to predict disaster response message categories
+        X_test - message test data
+        Y_test - category test data
+        category_names - names of categories
+    OUTPUT
+        None
+    '''  
     y_pred = model.predict(X_test)
     
     for i, col in enumerate(Y_test):
@@ -71,6 +104,14 @@ def evaluate_model(model, X_test, Y_test, category_names):
 
 
 def save_model(model, model_filepath):
+    '''
+    Save model to pickle
+    INPUT 
+        model - trained model
+        model_filepath - filepath to save model to
+    OUTPUT
+        None
+    '''  
     pickle.dump(model, open(model_filepath, 'wb'))
 
 

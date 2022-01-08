@@ -4,7 +4,14 @@ from sqlalchemy import create_engine
 
 
 def load_data(messages_filepath, categories_filepath):
-    
+    '''
+    Merges message and categories datasets on id of message
+    INPUT 
+        messages_filepath - location of messages dataset
+        categories_filepath - location of categories dataset
+    OUTPUT
+        df - dataframe with merged messages and categories datasets
+    '''
     messages = pd.read_csv(messages_filepath)
     categories = pd.read_csv(categories_filepath)
     
@@ -14,6 +21,13 @@ def load_data(messages_filepath, categories_filepath):
 
 
 def clean_data(df):
+    '''
+    Cleans data: Separates categories on ;, extracts column names from row and replace column names, extracts category values, and removes duplicates
+    INPUT 
+        df - dataframe of merged messages and categories datasets
+    OUTPUT
+        df - dataframe with cleaned data
+    '''
     categories  = df.categories.str.split(pat = ';', expand = True)
     
     row = categories.head(1)
@@ -35,6 +49,15 @@ def clean_data(df):
     return df
 
 def save_data(df, database_filename):
+    '''
+    Saves cleaned data to sql database table
+    INPUT 
+        df - location of cleaned dataset
+        database_filename - location to create database
+    OUTPUT
+        None
+        Saves data to clean_disaster table at database location
+    '''
     engine = create_engine('sqlite:///' + database_filename) # DisasterResponse.db
     df.to_sql('clean_disaster', engine, index=False)     
 
