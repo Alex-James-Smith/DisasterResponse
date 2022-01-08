@@ -40,6 +40,8 @@ def clean_data(df):
 
         # convert column from string to numeric
         categories[column] = categories[column].astype(int)
+    for column in categories.columns:
+        categories.loc[(categories[column]!=1)&(categories[column]!=0)] = 1
         
     df = df.drop(columns = 'categories')
     df = pd.concat([df, categories], axis=1)
