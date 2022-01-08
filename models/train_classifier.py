@@ -49,11 +49,11 @@ def build_model():
             ('tfidf', TfidfTransformer())
         ])),
 
-    ('clf', MultiOutputClassifier(RandomForestClassifier()))
+    ('clf', MultiOutputClassifier(RandomForestClassifier(max_depth = 6)))
     ])
     
     parameters = {
-        'clf__estimator__n_estimators': [50, 100]
+        'clf__estimator__n_estimators': [25, 50]
     }
 
     cv = GridSearchCV(pipeline, param_grid = parameters)
